@@ -9,18 +9,15 @@
 namespace debug {
     export const options = require('debug')('bej:options')
     export const io = require('debug')('bej:io')
-    export const edit = require('debug')('bej:edit')
 }
+
+import { readFile, writeFile, addObjects, removeKeys } from './core'
 
 import { docopt } from 'docopt'
 import { version } from './version'
 import globby from 'globby'
 import matcher from 'matcher'
 import path from 'path'
-import { Maybe } from 'purify-ts/Maybe'
-import { Either, Left, Right } from 'purify-ts/Either'
-
-const { curry } = require('@thisables/curry')
 
 
 interface UserOptions {
@@ -34,48 +31,40 @@ interface UserOptions {
 }
 
 
+// TODO: honor dry-run flag
 const docstring = `
 Usage:
-    batch-edit-json [-v] [--remove=<key>]... [--add=<object>]... [--exclude=<exclude_path>]... <path>...
+    batch-edit-json [-vd] [--remove=<key>]... [--add=<object>]... [--exclude=<exclude_path>]... <path>...
     batch-edit-json --help | --version
 
 -r,--remove      Remove key from matching paths
 -a,--add         Add object to matching paths
 -e,--exclude     Paths (glob) to exclude
 -v,--verbose     Be verbose when editing files, echoing filenames as they are edited
+-d,--dry-run     Do not edit files, only output what edits would take place
 -h,--help        Show this help message
 --version        Show version number
 `
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function tryCatch(func: Function): Either<any, Error> {
-    try {
-        return Right(func())
-    } catch (error) {
-        return Left(error)
+function reduceGlobsToPaths(accumulator: string[], glob: string): string[] {
+    return [...accumulator, ...globby.sync(glob)]
+}
+
+function reduceRemoveExcludedPaths(options: UserOptions): (accumulator: string[], path: string) => string[] {
+    return function reducerRemoveExcludedPaths(accumulator: string[], path: string): string[] {
+        return options['--exclude'].length > 0 && matcher([path], options['--exclude']).length > 0
+            ? accumulator
+            : [...accumulator, path]
     }
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function readFile(file: string): Either<any, Error> {
-    debug.io(`Parsing ${file}`)
-    return tryCatch(() => require(file))
-}
-
-function removeKey(prop: string, data: any) {
-    if (prop === null) {
-        return data
+function verboseLogger(verbose: boolean, file: string, stream = console.log.bind(null)) {
+    return function verboseStreamLogger(message: string) {
+        if (verbose) {
+            stream(`File ${file}:`, message)
+        }
     }
-    debug.edit(`Removing key ${prop}`)
-    delete data[prop]
-    return data
 }
-
-function uncurriedRemoveKeys(properties: string[], data: any) {
-    properties.forEach(prop => data = removeKey(prop, data))
-    return data
-}
-const removeKeys = curry.call(uncurriedRemoveKeys)
 
 function main(): void {
 
@@ -87,26 +76,27 @@ function main(): void {
     debug.options(JSON.stringify(options, null, 4))
 
     const paths = options['<path>']
-        .reduce(
-            (acc: string[], path) => [...acc, ...globby.sync(path)],
-            []
-        )
-        .reduce(
-            (acc: string[], p) =>
-                options['--exclude'].length > 0 && matcher([p], options['--exclude']).length > 0
-                ? acc
-                : [...acc, p],
-            []
-        )
+        .reduce(reduceGlobsToPaths, [])
+        .reduce(reduceRemoveExcludedPaths(options), [])
         .map(p => [process.cwd(), p].join(path.sep))
     debug.io(`Matching paths:`, JSON.stringify(paths, null, 4))
 
     for (const file of paths) {
-        readFile(file)
-            .map(removeKeys(options['--remove']))
+        const verbose = verboseLogger(options['-v'], file)
+
+        readFile(verbose, file)
+            .map(removeKeys(verbose, options['--remove']))
+            .map(addObjects(verbose, options['--add']))
+            .map(writeFile(file))
             .bimap(
                 console.error.bind(null),
-                (data) => debug.io(file, JSON.stringify(data, null, 4))
+                (future) => future.fork(
+                    console.error.bind(null),
+                    (file) => {
+                        debug.io(`Wrote file ${file}`)
+                        verbose(`write complete`)
+                    }
+                )
             )
     }
 }

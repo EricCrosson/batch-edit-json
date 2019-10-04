@@ -2,6 +2,7 @@ dependencies:
   '@thisables/curry': 7.0.0
   '@types/docopt': 0.6.31
   docopt: 0.6.2
+  fluture: 11.0.3
   globby: 10.0.1
   matcher: 2.0.0
   purify-ts: 0.13.2
@@ -1346,6 +1347,15 @@ packages:
       node: '>=6.12.3 <7 || >=8.9.4 <9 || >=10.0.0'
     resolution:
       integrity: sha512-l0RFuB8RLfCS0Pt2Id39/oCPykE01pyxgAFypWTlaGRgvLkZrtczZ8atEHpTeEIW+zYWXTBuA9cCSeEOScxReQ==
+  /concurrify/1.1.1:
+    dependencies:
+      sanctuary-show: 1.0.0
+      sanctuary-type-identifiers: 2.0.1
+    dev: false
+    engines:
+      node: '>=6.0.0'
+    resolution:
+      integrity: sha512-m2UMqZAJ7Ys4Juu0IaToa/RbVuu5jR8dGVrwUOeQtfJjX0KDimUdPZ20tVrdSuqJwLaFbpI+lWxOmZSYxyCvmQ==
   /configstore/3.1.2:
     dependencies:
       dot-prop: 4.2.0
@@ -2192,6 +2202,16 @@ packages:
     dev: true
     resolution:
       integrity: sha512-a1hQMktqW9Nmqr5aktAux3JMNqaucxGcjtjWnZLHX7yyPCmlSV3M54nGYbqT8K+0GhF3NBgmJCc3ma+WOgX8Jg==
+  /fluture/11.0.3:
+    dependencies:
+      concurrify: 1.1.1
+      sanctuary-show: 1.0.0
+      sanctuary-type-identifiers: 2.0.1
+    dev: false
+    engines:
+      node: '>=4.0.0'
+    resolution:
+      integrity: sha512-6YrDSkWVfzy2dS4AxrWUIBJCK905sfVjfYS0r9Nn9TnloArxOwYxgMvlmdgLbQrjhE26M+bzikAACzI6MxVWuw==
   /for-in/1.0.2:
     dev: true
     engines:
@@ -4597,6 +4617,14 @@ packages:
     dev: true
     resolution:
       integrity: sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==
+  /sanctuary-show/1.0.0:
+    dev: false
+    resolution:
+      integrity: sha512-63UqNGr5M6wkzKp6eGc/Gy6JBIV2PbzPd3q88+0F9z0qydAQsCWJ+7e4oor39rEEwj2GkZMDEhqGuiMl9eEnYw==
+  /sanctuary-type-identifiers/2.0.1:
+    dev: false
+    resolution:
+      integrity: sha1-/FJM9t2Szr/LsN2VCe/xkxWaIO0=
   /sax/1.2.4:
     dev: true
     resolution:
@@ -5694,6 +5722,7 @@ specifiers:
   debug: ^4.1.1
   docopt: ^0.6.2
   eslint: ^5.16.0
+  fluture: ^11.0.3
   genversion: ^2.2.0
   globby: ^10.0.1
   matcher: ^2.0.0
