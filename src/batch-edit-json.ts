@@ -24,6 +24,7 @@ interface UserOptions {
     "--help": boolean;
     "--version": boolean;
     "-v": boolean;
+    "-d": boolean;
     "--add": string[];
     "--remove": string[];
     "--exclude": string[];
@@ -31,7 +32,6 @@ interface UserOptions {
 }
 
 
-// TODO: honor dry-run flag
 const docstring = `
 Usage:
     batch-edit-json [-vd] [--remove=<key>]... [--add=<object>]... [--exclude=<exclude_path>]... <path>...
@@ -59,9 +59,9 @@ function reduceRemoveExcludedPaths(options: UserOptions): (accumulator: string[]
 }
 
 function verboseLogger(verbose: boolean, file: string, stream = console.log.bind(null)) {
-    return function verboseStreamLogger(message: string) {
+    return function verboseStreamLogger(...message: any[]) {
         if (verbose) {
-            stream(`File ${file}:`, message)
+            stream(`File ${file}:`, ...message)
         }
     }
 }
@@ -78,8 +78,10 @@ function main(): void {
     const paths = options['<path>']
         .reduce(reduceGlobsToPaths, [])
         .reduce(reduceRemoveExcludedPaths(options), [])
-        .map(p => [process.cwd(), p].join(path.sep))
+        .map(p => path.resolve(process.cwd(), p))
     debug.io(`Matching paths:`, JSON.stringify(paths, null, 4))
+
+    const dryRun = options['-d']
 
     for (const file of paths) {
         const verbose = verboseLogger(options['-v'], file)
@@ -87,15 +89,12 @@ function main(): void {
         readFile(verbose, file)
             .map(removeKeys(verbose, options['--remove']))
             .map(addObjects(verbose, options['--add']))
-            .map(writeFile(file))
+            .map(writeFile(verbose, dryRun, file))
             .bimap(
                 console.error.bind(null),
                 (future) => future.fork(
                     console.error.bind(null),
-                    (file) => {
-                        debug.io(`Wrote file ${file}`)
-                        verbose(`write complete`)
-                    }
+                    () => {}
                 )
             )
     }

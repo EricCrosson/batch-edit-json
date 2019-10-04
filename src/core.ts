@@ -21,17 +21,29 @@ function tryCatch(func: () => any): Either<Error, any> {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function readFile(log: (message: string) => void, file: string): Either<Error, any> {
+export function readFile(
+    log: (...message: string[]) => void,
+    file: string
+): Either<Error, any> {
     debug.io(`Parsing ${file}`)
     log(`parsing`)
     return tryCatch(() => require(file))
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function writeFile(file: string): (data: any) => Future.FutureInstance<NodeJS.ErrnoException, string> {
+export function writeFile(
+    log: (...message: string[]) => void,
+    dryRun: boolean,
+    file: string
+): (data: any) => Future.FutureInstance<NodeJS.ErrnoException, string> {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return function fileWriter(data: any): Future.FutureInstance<NodeJS.ErrnoException, string> {
         return Future.tryP(async () => new Promise((resolve, reject) => {
+            if (dryRun) {
+                debug.io(`DRY RUN: Not writing file ${file}`)
+                log(`DRY RUN: Skipping write with contents\n`, JSON.stringify(data, null, 4))
+                return resolve()
+            }
             fs.writeFile(
                 file,
                 JSON.stringify(data, null, 4),
@@ -39,7 +51,9 @@ export function writeFile(file: string): (data: any) => Future.FutureInstance<No
                     if (err !== null) {
                         reject(err)
                     } else {
-                        resolve(file)
+                        debug.io(`Wrote file ${file}`)
+                        log('write complete')
+                        resolve()
                     }
                 })
         }))
@@ -48,7 +62,7 @@ export function writeFile(file: string): (data: any) => Future.FutureInstance<No
 
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function addObject(log: (message: string) => void, obj: string, data: any) {
+function addObject(log: (...message: string[]) => void, obj: string, data: any) {
     return tryCatch(() => JSON.parse(obj))
         .bimap(
             (error: Error) => {
@@ -69,14 +83,14 @@ function addObject(log: (message: string) => void, obj: string, data: any) {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function uncurriedAddObjects(log: (message: string) => void, objects: string[], data: any) {
+function uncurriedAddObjects(log: (...message: string[]) => void, objects: string[], data: any) {
     objects.forEach((obj) => data = addObject(log, obj, data))
     return data
 }
 export const addObjects = curry.call(uncurriedAddObjects)
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function removeKey(log: (message: string) => void, prop: string, data: any) {
+function removeKey(log: (...message: string[]) => void, prop: string, data: any) {
     if (prop === null) {
         return data
     }
@@ -87,7 +101,7 @@ function removeKey(log: (message: string) => void, prop: string, data: any) {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function uncurriedRemoveKeys(log: (message: string) => void, properties: string[], data: any) {
+function uncurriedRemoveKeys(log: (...message: string[]) => void, properties: string[], data: any) {
     properties.forEach((prop) => data = removeKey(log, prop, data))
     return data
 }
