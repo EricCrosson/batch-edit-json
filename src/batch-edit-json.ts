@@ -3,6 +3,9 @@
  * Batch-edit json files
  */
 
+/* eslint-disable @typescript-eslint/indent */
+/* eslint-disable @typescript-eslint/promise-function-async */
+
 namespace debug {
     export const options = require('debug')('bej:options')
     export const io = require('debug')('bej:io')
@@ -31,7 +34,7 @@ interface UserOptions {
 }
 
 
-const docstring: string = `
+const docstring = `
 Usage:
     batch-edit-json [-v] [-r <key>] [-a <object>] [-e <exclude_path>] <path>...
     batch-edit-json --help | --version
@@ -43,6 +46,7 @@ Usage:
 --version        Show version number
 `
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function tryCatch(func: Function): Either<any, Error> {
     try {
         return Right(func())
@@ -51,12 +55,13 @@ function tryCatch(func: Function): Either<any, Error> {
     }
 }
 
-function readFile(file: string) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function readFile(file: string): Either<any, Error> {
     debug.io(`Parsing ${file}`)
     return tryCatch(() => require(file))
 }
 
-function main() {
+function main(): void {
 
     const options: UserOptions = docopt(docstring, {
         help: true,
@@ -85,8 +90,8 @@ function main() {
 
             // })
             .bimap(
-                console.error,
-                data => debug.io(file, JSON.stringify(data, null, 4))
+                console.error.bind(null),
+                (data) => debug.io(file, JSON.stringify(data, null, 4))
             )
     }
 }
