@@ -1,4 +1,5 @@
 dependencies:
+  '@thisables/curry': 7.0.0
   '@types/docopt': 0.6.31
   docopt: 0.6.2
   globby: 10.0.1
@@ -416,6 +417,12 @@ packages:
       node: '>= 8'
     resolution:
       integrity: sha512-1V9XOY4rDW0rehzbrcqAmHnz8e7SKvX27gh8Gt2WgB0+pdzdiLV83p72kZPU+jvMbS1qU5mauP2iOvO8rhmurQ==
+  /@thisables/curry/7.0.0:
+    dependencies:
+      util-arity: 1.1.0
+    dev: false
+    resolution:
+      integrity: sha1-QNhDnH75fBvSccUQaic+9DeKJs0=
   /@types/docopt/0.6.31:
     dev: false
     resolution:
@@ -5468,6 +5475,10 @@ packages:
       node: '>=0.10.0'
     resolution:
       integrity: sha512-cwESVXlO3url9YWlFW/TA9cshCEhtu7IKJ/p5soJ/gGpj7vbvFrAY/eIioQ6Dw23KjZhYgiIo8HOs1nQ2vr/oQ==
+  /util-arity/1.1.0:
+    dev: false
+    resolution:
+      integrity: sha1-WdAa8f2z/t4KxOYysKtfbOl8kzA=
   /util-deprecate/1.0.2:
     dev: true
     resolution:
@@ -5671,6 +5682,7 @@ packages:
     resolution:
       integrity: sha1-5a2ryKz0CPY4X8dklWhMiOavaJo=
 specifiers:
+  '@thisables/curry': ^7.0.0
   '@types/docopt': ^0.6.31
   '@types/node': ^10.14.4
   '@typescript-eslint/eslint-plugin': ^1.7.0

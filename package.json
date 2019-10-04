@@ -43,6 +43,7 @@
     },
     "homepage": "https://github.com/EricCrosson/batch-edit-json",
     "dependencies": {
+        "@thisables/curry": "^7.0.0",
         "@types/docopt": "^0.6.31",
         "docopt": "^0.6.2",
         "globby": "^10.0.1",

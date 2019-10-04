@@ -9,6 +9,7 @@
 namespace debug {
     export const options = require('debug')('bej:options')
     export const io = require('debug')('bej:io')
+    export const edit = require('debug')('bej:edit')
 }
 
 import { docopt } from 'docopt'
@@ -19,28 +20,28 @@ import path from 'path'
 import { Maybe } from 'purify-ts/Maybe'
 import { Either, Left, Right } from 'purify-ts/Either'
 
+const { curry } = require('@thisables/curry')
+
 
 interface UserOptions {
     "--help": boolean;
     "--version": boolean;
-    "-a": boolean;
-    "-r": boolean;
-    "-e": boolean;
     "-v": boolean;
-    "<key>": string;
-    "<object>": string;
-    "<exclude_path>": string;
+    "--add": string[];
+    "--remove": string[];
+    "--exclude": string[];
     "<path>": string[];
 }
 
 
 const docstring = `
 Usage:
-    batch-edit-json [-v] [-r <key>] [-a <object>] [-e <exclude_path>] <path>...
+    batch-edit-json [-v] [--remove=<key>]... [--add=<object>]... [--exclude=<exclude_path>]... <path>...
     batch-edit-json --help | --version
 
--r               Remove key from matching paths
--a               Add object to matching paths
+-r,--remove      Remove key from matching paths
+-a,--add         Add object to matching paths
+-e,--exclude     Paths (glob) to exclude
 -v,--verbose     Be verbose when editing files, echoing filenames as they are edited
 -h,--help        Show this help message
 --version        Show version number
@@ -61,6 +62,21 @@ function readFile(file: string): Either<any, Error> {
     return tryCatch(() => require(file))
 }
 
+function removeKey(prop: string, data: any) {
+    if (prop === null) {
+        return data
+    }
+    debug.edit(`Removing key ${prop}`)
+    delete data[prop]
+    return data
+}
+
+function uncurriedRemoveKeys(properties: string[], data: any) {
+    properties.forEach(prop => data = removeKey(prop, data))
+    return data
+}
+const removeKeys = curry.call(uncurriedRemoveKeys)
+
 function main(): void {
 
     const options: UserOptions = docopt(docstring, {
@@ -76,7 +92,8 @@ function main(): void {
             []
         )
         .reduce(
-            (acc: string[], p) => options['-e'] && matcher.isMatch(p, options['<exclude_path>'])
+            (acc: string[], p) =>
+                options['--exclude'].length > 0 && matcher([p], options['--exclude']).length > 0
                 ? acc
                 : [...acc, p],
             []
@@ -86,9 +103,7 @@ function main(): void {
 
     for (const file of paths) {
         readFile(file)
-            // .map(data => {
-
-            // })
+            .map(removeKeys(options['--remove']))
             .bimap(
                 console.error.bind(null),
                 (data) => debug.io(file, JSON.stringify(data, null, 4))
