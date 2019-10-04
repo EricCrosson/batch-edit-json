@@ -7,8 +7,9 @@
     "scripts": {
         "cm": "git-cz",
         "prepublishOnly": "npm run compile",
-        "compile": "npm run clean && tsc",
+        "compile": "npm run clean && npm run genversion && tsc",
         "clean": "rm -rf dist",
+        "genversion": "genversion -e -s src/version.ts",
         "ava": "ava -s -v",
         "ava:fail-fast": "ava -s -v --fail-fast",
         "watch:ava": "nodemon -e 'ts json' -x 'npm run ava || true'",
@@ -41,7 +42,10 @@
         "url": "https://github.com/EricCrosson/batch-edit-json/issues"
     },
     "homepage": "https://github.com/EricCrosson/batch-edit-json",
-    "dependencies": {},
+    "dependencies": {
+        "@types/docopt": "^0.6.31",
+        "docopt": "^0.6.2"
+    },
     "devDependencies": {
         "@types/node": "^10.14.4",
         "@typescript-eslint/eslint-plugin": "^1.7.0",
@@ -50,8 +54,11 @@
         "codecov": "^3.1.0",
         "commitizen": "^4.0.3",
         "cz-conventional-changelog": "^3.0.2",
+        "debug": "^4.1.1",
         "eslint": "^5.16.0",
+        "genversion": "^2.2.0",
         "nyc": "^14.1.0",
+        "supports-color": "^7.1.0",
         "tap-nyc": "^1.0.3",
         "ts-node": "^7.0.1",
         "typedoc": "^0.14.2",

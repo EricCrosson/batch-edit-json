@@ -5,20 +5,8 @@
 ## Install
 
 ```shell
-npm install batch-edit-json
+npm install -g batch-edit-json
 ```
+<!-- TODO: use a bin to provide command in package.json -->
 
 ## Use
-
-```typescript
-import { batchEditJson } from 'batch-edit-json'
-// TODO: describe usage
-```
-
-## Related
-
-TODO
-
-## Acknowledgments
-
-TODO
