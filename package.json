@@ -44,7 +44,10 @@
     "homepage": "https://github.com/EricCrosson/batch-edit-json",
     "dependencies": {
         "@types/docopt": "^0.6.31",
-        "docopt": "^0.6.2"
+        "docopt": "^0.6.2",
+        "globby": "^10.0.1",
+        "matcher": "^2.0.0",
+        "purify-ts": "^0.13.2"
     },
     "devDependencies": {
         "@types/node": "^10.14.4",
@@ -84,9 +87,6 @@
     "nyc": {
         "include": [
             "src/*.ts"
-        ],
-        "exclude": [
-            "typings"
         ],
         "extension": [
             ".ts"
