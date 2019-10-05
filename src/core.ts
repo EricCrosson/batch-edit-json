@@ -12,7 +12,13 @@ import { Either, Left, Right } from 'purify-ts/Either'
 const { curry } = require('@thisables/curry')
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function tryCatch(func: () => any): Either<Error, any> {
+type Logger =  (...message: any[]) => void
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type json = any
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function tryCatch(func: () => any): Either<Error, json> {
     try {
         return Right(func())
     } catch (error) {
@@ -20,28 +26,25 @@ function tryCatch(func: () => any): Either<Error, any> {
     }
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function readFile(
-    log: (...message: string[]) => void,
+    log: Logger,
     file: string
-): Either<Error, any> {
+): Either<Error, json> {
     debug.io(`Parsing ${file}`)
-    log(`parsing`)
+    log(`reading file`)
     return tryCatch(() => require(file))
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function writeFile(
-    log: (...message: string[]) => void,
+    log: Logger,
     dryRun: boolean,
     file: string
-): (data: any) => Future.FutureInstance<NodeJS.ErrnoException, string> {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return function fileWriter(data: any): Future.FutureInstance<NodeJS.ErrnoException, string> {
+): (data: json) => Future.FutureInstance<NodeJS.ErrnoException, string> {
+    return function fileWriter(data: json): Future.FutureInstance<NodeJS.ErrnoException, string> {
         return Future.tryP(async () => new Promise((resolve, reject) => {
             if (dryRun) {
                 debug.io(`DRY RUN: Not writing file ${file}`)
-                log(`DRY RUN: Skipping write with contents\n`, JSON.stringify(data, null, 4))
+                log(`DRY RUN: skipping write with contents\n`, JSON.stringify(data, null, 4))
                 return resolve()
             }
             fs.writeFile(
@@ -61,8 +64,7 @@ export function writeFile(
 }
 
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function addObject(log: (...message: string[]) => void, obj: string, data: any) {
+function addObject(obj: string, data: json) {
     return tryCatch(() => JSON.parse(obj))
         .bimap(
             (error: Error) => {
@@ -74,35 +76,28 @@ function addObject(log: (...message: string[]) => void, obj: string, data: any) 
                 console.error(`Ignoring argument '--add ${obj}' for reason '${errorType}: ${error.message}'`)
                 return data
             },
-            (d) => {
-                log(`adding object ${obj}`)
-                return Object.assign(data, d)
-            }
+            (d) => Object.assign(data, d)
         )
         .extract()
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function uncurriedAddObjects(log: (...message: string[]) => void, objects: string[], data: any) {
-    objects.forEach((obj) => data = addObject(log, obj, data))
+function uncurriedAddObjects(objects: string[], data: json) {
+    objects.forEach((obj) => data = addObject(obj, data))
     return data
 }
 export const addObjects = curry.call(uncurriedAddObjects)
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function removeKey(log: (...message: string[]) => void, prop: string, data: any) {
+function removeKey(prop: string, data: json) {
     if (prop === null) {
         return data
     }
     debug.edit(`Removing key ${prop}`)
-    log(`removing key ${prop}`)
     delete data[prop]
     return data
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function uncurriedRemoveKeys(log: (...message: string[]) => void, properties: string[], data: any) {
-    properties.forEach((prop) => data = removeKey(log, prop, data))
+function uncurriedRemoveKeys(properties: string[], data: json) {
+    properties.forEach((prop) => data = removeKey(prop, data))
     return data
 }
 export const removeKeys = curry.call(uncurriedRemoveKeys)

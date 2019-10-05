@@ -59,7 +59,8 @@ function reduceRemoveExcludedPaths(options: UserOptions): (accumulator: string[]
 }
 
 function verboseLogger(verbose: boolean, file: string, stream = console.log.bind(null)) {
-    return function verboseStreamLogger(...message: any[]) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return function verboseStreamLogger(...message: any[]): void {
         if (verbose) {
             stream(`File ${file}:`, ...message)
         }
@@ -87,8 +88,8 @@ function main(): void {
         const verbose = verboseLogger(options['-v'], file)
 
         readFile(verbose, file)
-            .map(removeKeys(verbose, options['--remove']))
-            .map(addObjects(verbose, options['--add']))
+            .map(removeKeys(options['--remove']))
+            .map(addObjects(options['--add']))
             .map(writeFile(verbose, dryRun, file))
             .bimap(
                 console.error.bind(null),
