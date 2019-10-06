@@ -7,6 +7,5 @@
 ```shell
 npm install -g batch-edit-json
 ```
-<!-- TODO: use a bin to provide command in package.json -->
 
 ## Use

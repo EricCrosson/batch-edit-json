@@ -4,6 +4,9 @@
     "description": "Batch-edit json files",
     "main": "dist/src/batch-edit-json.js",
     "types": "dist/src/batch-edit-json.d.ts",
+    "bin": {
+        "batch-edit-json": "dist/src/batch-edit-json.js"
+    },
     "scripts": {
         "cm": "git-cz",
         "prepublishOnly": "npm run compile",
