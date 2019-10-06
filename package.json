@@ -1,6 +1,6 @@
 {
     "name": "batch-edit-json",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "Batch-edit json files",
     "main": "dist/src/batch-edit-json.js",
     "types": "dist/src/batch-edit-json.d.ts",
