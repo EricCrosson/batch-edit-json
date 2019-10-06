@@ -48,11 +48,13 @@
     "dependencies": {
         "@thisables/curry": "^7.0.0",
         "@types/docopt": "^0.6.31",
+        "debug": "^4.1.1",
         "docopt": "^0.6.2",
         "fluture": "^11.0.3",
         "globby": "^10.0.1",
         "matcher": "^2.0.0",
-        "purify-ts": "^0.13.2"
+        "purify-ts": "^0.13.2",
+        "supports-color": "^7.1.0"
     },
     "devDependencies": {
         "@types/node": "^10.14.4",
@@ -62,11 +64,9 @@
         "codecov": "^3.1.0",
         "commitizen": "^4.0.3",
         "cz-conventional-changelog": "^3.0.2",
-        "debug": "^4.1.1",
         "eslint": "^5.16.0",
         "genversion": "^2.2.0",
         "nyc": "^14.1.0",
-        "supports-color": "^7.1.0",
         "tap-nyc": "^1.0.3",
         "ts-node": "^7.0.1",
         "typedoc": "^0.14.2",
