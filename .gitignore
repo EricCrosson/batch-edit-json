@@ -10,3 +10,4 @@ flycheck_*
 /.nyc_output
 /coverage.lcov
 /scratch
+/src/version.ts
