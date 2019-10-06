@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 /**
  * batch-edit-json
  * Batch-edit json files
