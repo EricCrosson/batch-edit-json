@@ -44,7 +44,10 @@ export function writeFile(
         return Future.tryP(async () => new Promise((resolve, reject) => {
             if (dryRun) {
                 debug.io(`DRY RUN: Not writing file ${file}`)
-                log(`DRY RUN: skipping write with contents\n`, JSON.stringify(data, null, 4))
+                console.log(
+                    `DRY RUN: File ${file}: skipping write with contents\n`,
+                    JSON.stringify(data, null, 4)
+                )
                 return resolve()
             }
             fs.writeFile(
