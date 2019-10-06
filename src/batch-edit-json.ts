@@ -95,9 +95,15 @@ function main(): void {
             .map(addObjects(options['--add']))
             .map(writeFile(verbose, dryRun, file))
             .bimap(
-                (console.error.bind(null), exitCode = -1),
+                () => {
+                    exitCode = -1
+                    console.error.bind(null)
+                },
                 (future) => future.fork(
-                    (console.error.bind(null), exitCode = -1),
+                    () => {
+                        exitCode = -1
+                        console.error.bind(null)
+                    },
                     () => {}
                 )
             )
