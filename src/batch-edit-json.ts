@@ -85,6 +85,8 @@ function main(): void {
 
     const dryRun = options['-d']
 
+    let exitCode = 0
+
     for (const file of paths) {
         const verbose = verboseLogger(options['-v'], file)
 
@@ -93,13 +95,15 @@ function main(): void {
             .map(addObjects(options['--add']))
             .map(writeFile(verbose, dryRun, file))
             .bimap(
-                console.error.bind(null),
+                (console.error.bind(null), exitCode = -1),
                 (future) => future.fork(
-                    console.error.bind(null),
+                    (console.error.bind(null), exitCode = -1),
                     () => {}
                 )
             )
     }
+
+    process.exit(exitCode)
 }
 
 main()
