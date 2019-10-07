@@ -2,6 +2,12 @@
 
 > Batch-edit json files
 
+This tool aims to be:
+
+- simple
+- convenient
+- fast (IO operations performed in parallel)
+
 ## Install
 
 ```shell
@@ -24,8 +30,9 @@ Usage:
 --version        Show version number
 ```
 
-All `path`s  may be globs.
+All `path` fields may be expressed in globs.
 
 ## Related
 
+- [docopt](https://docopt.org)
 - [globby](https://github.com/sindresorhus/globby)
