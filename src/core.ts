@@ -91,11 +91,17 @@ function uncurriedAddObjects(objects: string[], data: json) {
 export const addObjects = curry.call(uncurriedAddObjects)
 
 function removeKey(prop: string, data: json) {
-    if (prop === null) {
-        return data
-    }
     debug.edit(`Removing key ${prop}`)
-    delete data[prop]
+    const properties = prop.split('.')
+    const finalKey = properties.pop()!
+
+    let obj = data
+    for (const property of properties) {
+        obj = obj[property]
+        if (obj === undefined) { return data }
+    }
+
+    delete obj[finalKey]
     return data
 }
 
