@@ -93,6 +93,7 @@ export const addObjects = curry.call(uncurriedAddObjects)
 function removeKey(prop: string, data: json) {
     debug.edit(`Removing key ${prop}`)
     const properties = prop.split('.')
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const finalKey = properties.pop()!
 
     let obj = data
