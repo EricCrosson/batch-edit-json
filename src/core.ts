@@ -39,8 +39,8 @@ export function writeFile(
     log: Logger,
     dryRun: boolean,
     file: string
-): (data: json) => Future.FutureInstance<NodeJS.ErrnoException, string> {
-    return function fileWriter(data: json): Future.FutureInstance<NodeJS.ErrnoException, string> {
+): (data: json) => Future.FutureInstance<NodeJS.ErrnoException, void> {
+    return function fileWriter(data: json) {
         return Future.tryP(async () => new Promise((resolve, reject) => {
             if (dryRun) {
                 debug.io(`DRY RUN: Not writing file ${file}`)

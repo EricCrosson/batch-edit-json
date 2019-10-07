@@ -68,7 +68,7 @@ function verboseLogger(verbose: boolean, file: string, stream = console.log.bind
     }
 }
 
-function main(): void {
+async function main(): Promise<void> {
 
     const options: UserOptions = docopt(docstring, {
         help: true,
@@ -85,7 +85,7 @@ function main(): void {
 
     const dryRun = options['-d']
 
-    let exitCode = 0
+    const promises: Promise<number>[] = [Promise.resolve(0)]
 
     for (const file of paths) {
         const verbose = verboseLogger(options['-v'], file)
@@ -95,21 +95,26 @@ function main(): void {
             .map(addObjects(options['--add']))
             .map(writeFile(verbose, dryRun, file))
             .bimap(
-                () => {
-                    exitCode = -1
-                    console.error.bind(null)
+                (error) => {
+                    promises.push(Promise.resolve(1))
+                    console.error(error)
                 },
-                (future) => future.fork(
-                    () => {
-                        exitCode = -1
-                        console.error.bind(null)
-                    },
-                    () => {}
-                )
+                (future) => promises.push(
+                    new Promise((resolve, reject) => {
+                        future.fork(
+                            (error) => {
+                                console.error(error)
+                                reject(1)
+                            },
+                            () => resolve(0)
+                        )
+                    }))
             )
     }
 
-    process.exit(exitCode)
+    await Promise.all(promises)
+        .then(exitCodes =>
+              process.exit(exitCodes.reduce((acc, code) => acc + code)))
 }
 
 main()
