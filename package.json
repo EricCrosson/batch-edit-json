@@ -53,6 +53,7 @@
         "fluture": "^11.0.3",
         "globby": "^10.0.1",
         "matcher": "^2.0.0",
+        "merge-deep": "^3.0.3",
         "purify-ts": "^0.13.2",
         "supports-color": "^7.1.0"
     },

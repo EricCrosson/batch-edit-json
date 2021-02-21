@@ -7,6 +7,7 @@ import fs from 'fs'
 import * as Future from 'fluture'
 import { Maybe } from 'purify-ts/Maybe'
 import { Either, Left, Right } from 'purify-ts/Either'
+const mergeDeep = require('merge-deep')
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { curry } = require('@thisables/curry')
@@ -66,7 +67,6 @@ export function writeFile(
     }
 }
 
-
 function addObject(obj: string, data: json) {
     return tryCatch(() => JSON.parse(obj))
         .bimap(
@@ -79,7 +79,7 @@ function addObject(obj: string, data: json) {
                 console.error(`Ignoring argument '--add ${obj}' for reason '${errorType}: ${error.message}'`)
                 return data
             },
-            (d) => Object.assign(data, d)
+            (d) => mergeDeep(data, d)
         )
         .extract()
 }
