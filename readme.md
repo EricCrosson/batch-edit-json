@@ -32,7 +32,7 @@ Usage:
 
 All `path` fields may be expressed in globs.
 
-## Related
+## Acknowledgments
 
 - [docopt](https://docopt.org)
 - [globby](https://github.com/sindresorhus/globby)
