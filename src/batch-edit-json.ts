@@ -118,3 +118,7 @@ async function main(): Promise<void> {
 }
 
 main()
+
+// Local Variables:
+// mode: typescript
+// End:
