@@ -75,13 +75,13 @@ async function main(): Promise<void> {
         version: version,
         exit: true
     })
-    debug.options(JSON.stringify(options, null, 4))
+    debug.options(JSON.stringify(options, null, 2))
 
     const paths = options['<path>']
         .reduce(reduceGlobsToPaths, [])
         .reduce(reduceRemoveExcludedPaths(options), [])
         .map(p => path.resolve(process.cwd(), p))
-    debug.io(`Matching paths:`, JSON.stringify(paths, null, 4))
+    debug.io(`Matching paths:`, JSON.stringify(paths, null, 2))
 
     const dryRun = options['-d']
 

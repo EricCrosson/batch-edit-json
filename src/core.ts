@@ -47,13 +47,13 @@ export function writeFile(
                 debug.io(`DRY RUN: Not writing file ${file}`)
                 console.log(
                     `DRY RUN: File ${file}: skipping write with contents\n`,
-                    JSON.stringify(data, null, 4)
+                    JSON.stringify(data, null, 2)
                 )
                 return resolve()
             }
             fs.writeFile(
                 file,
-                JSON.stringify(data, null, 4),
+                JSON.stringify(data, null, 2) + '\n',
                 (err: NodeJS.ErrnoException | null) => {
                     if (err !== null) {
                         reject(err)
